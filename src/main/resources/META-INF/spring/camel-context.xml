@@ -39,5 +39,10 @@
                 </otherwise>
             </choice>
         </route>
+
+        <route id="fileRoute">
+            <from id="fileInboundChannel" uri="file://web/integration"/>
+            <to id="amqpOutboundChannel" uri="rabbitmq://{{amqp.host}}/{{amqp.exchange.files}}?connectionFactory=#amqpConnectionFactory"/>
+        </route>
     </camel:camelContext>
 </beans>

@@ -17,6 +17,14 @@
     <bean id="tweetTagger" class="com.thbono.cameltdc.TweetSubjectTagger"/>
     <bean id="htmlTransformer" class="com.thbono.cameltdc.HtmlDecoratorTransformer"/>
 
+    <bean id="amqpConnectionFactory" class="com.rabbitmq.client.ConnectionFactory">
+        <property name="host" value="${amqp.host}"/>
+        <property name="port" value="${amqp.port}"/>
+        <property name="username" value="${amqp.username}"/>
+        <property name="password" value="${amqp.password}"/>
+        <property name="virtualHost" value="weqycvob"/>
+    </bean>
+
     <bean id="shutdown" class="org.apache.camel.impl.DefaultShutdownStrategy">
         <property name="timeout" value="5"/>
     </bean>
