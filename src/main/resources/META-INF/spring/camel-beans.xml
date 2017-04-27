@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:property-placeholder location="classpath:app.properties" system-properties-mode="OVERRIDE" />
+
+    <bean id="twitter" class="org.apache.camel.component.twitter.TwitterComponent">
+        <property name="consumerKey" value="${twitter.oauth.consumerKey}"/>
+        <property name="consumerSecret" value="${twitter.oauth.consumerSecret}"/>
+        <property name="accessToken" value="${twitter.oauth.accessToken}"/>
+        <property name="accessTokenSecret" value="${twitter.oauth.accessTokenSecret}"/>
+    </bean>
+
+    <bean id="tweetTagger" class="com.thbono.cameltdc.TweetSubjectTagger"/>
+    <bean id="htmlTransformer" class="com.thbono.cameltdc.HtmlDecoratorTransformer"/>
+
+    <bean id="shutdown" class="org.apache.camel.impl.DefaultShutdownStrategy">
+        <property name="timeout" value="5"/>
+    </bean>
+</beans>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8"/>
+    <title>Twitter feeds</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <style>
+        .tweets {
+            padding: 10px;
+            border: dashed gray 1px;
+            width: 600px;
+        }
+        .tweet {
+            display: block;
+            border-top: solid lightgray 1px;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+        .sender {
+            background: yellow;
+            color: darkviolet;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .hashtag {
+            color: red;
+        }
+        .user {
+            color: green;
+        }
+    </style>
+    <script>
+        $( document ).ready(function() {
+            $.ajax({
+                url: "java-tweets.html",
+                dataType: "text"
+            }).done(function (data) {
+                var tweets = "<tweets>"+data+"</tweets>";
+                $("#java-tweets").html($(tweets).html());
+            });
+
+            $.ajax({
+                url: "other-tweets.html",
+                dataType: "text"
+            }).done(function (data) {
+                var tweets = "<tweets>"+data+"</tweets>";
+                $("#other-tweets").html($(tweets).html());
+            });
+        });
+    </script>
+</head>
+<body>
+<h1>#stackoverflow tweets</h1>
+<section>
+<h2>Java tweets</h2>
+<div class="tweets" id="java-tweets"></div>
+</section>
+
+<section>
+<h2>Other tweets</h2>
+<div class="tweets" id="other-tweets"></div>
+</section>
+
+<p><a href="discarded-tweets.txt">See discarded tweets</a> (tweets that doesn't contain links)</p>
+
+</body>
+</html>

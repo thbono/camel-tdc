@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xsi:schemaLocation="http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:property-placeholder location="classpath:app.properties"/>
+
+    <camel:camelContext xmlns="http://camel.apache.org/schema/spring" id="camel-tdc">
+        <propertyPlaceholder id="placeholder" location="classpath:app.properties"/>
+
+        <route id="linkTweetsRoute">
+            <from id="linkTweetsChannel" uri="direct://linkTweetsChannel"/>
+
+            <setHeader id="subjectHeaderEnricher" headerName="subject"><method ref="tweetTagger" method="getSubjectHeader"/></setHeader>
+            <setBody id="htmlTweetTransformer"><method ref="htmlTransformer" method="transform"/></setBody>
+
+            <to uri="file://web?fileName=${headers.subject}-tweets.html&amp;fileExist=Append"/>
+        </route>
+
+        <route id="tweetsRoute">
+            <from id="tweetsInboundChannel" uri="twitter://search?type=polling&amp;delay=6000&amp;keywords={{twitter.search}}"/>
+
+            <setHeader id="senderHeaderEnricher" headerName="sender"><simple>${body.user.screenName}</simple></setHeader>
+            <setBody id="tweetTransformer"><simple>${body.text}</simple></setBody>
+            <log id="newTweetLog" message="New tweet from ${headers.sender}"/>
+            
+            <choice id="linkTweetFilter">
+                <when>
+                    <simple>${body.contains("http://")} or ${body.contains("https://")}</simple>
+                    <to id="linkTweetsChannel" uri="direct://linkTweetsChannel"/>
+                </when>
+                <otherwise id="tweetsToDiscard">
+                    <setBody id="discardedTweetTransformer"><simple>${headers.sender} - ${body}\n</simple></setBody>
+                    <to id="discardedTweetsOutboundChannel" uri="file://web?fileName=discarded-tweets.txt&amp;fileExist=Append"/>
+                </otherwise>
+            </choice>
+        </route>
+    </camel:camelContext>
+</beans>
